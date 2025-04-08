@@ -58,6 +58,23 @@ class MainActivity : AppCompatActivity() {
         btn_delete.setOnClickListener {
             val input = edt_input.text
             val cursorPosition = edt_input.selectionStart
+            val symbol = "."
+
+            if (input.isNotEmpty() && cursorPosition == 0) {
+                return@setOnClickListener
+            }
+
+            if (input.length == 1 && input[0] in '0'..'9') {
+                input.delete(cursorPosition - 1, cursorPosition)
+                edt_input.setSelection(cursorPosition - 1)
+                return@setOnClickListener
+            }
+
+            if (cursorPosition == 1 && input[0] in '1'..'9' && input[cursorPosition] == '0' && symbol !in input && input.length == 2) {
+                input.delete(cursorPosition - 1, cursorPosition)
+                edt_input.setSelection(cursorPosition - 1)
+                return@setOnClickListener
+            }
 
             if (cursorPosition == 1 && input[0] in '1'..'9' && input[cursorPosition] == '0' && input[cursorPosition + 1] == '.') {
                 input.delete(cursorPosition - 1, cursorPosition)
@@ -65,12 +82,27 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if(cursorPosition > 0 && input.isNotEmpty()) {
+            if(input.isNotEmpty() && cursorPosition > 0 && symbol !in input) {
                 val deletedChar = input[cursorPosition - 1]
                 val nextChar = if (cursorPosition < input.length - 1) input[cursorPosition] else null
                 input.delete(cursorPosition - 1, cursorPosition)
                 edt_input.setSelection(cursorPosition - 1)
                 if (deletedChar in '1'..'9' && nextChar == '0') {
+                    val cleanedNull = input.toString().trimStart('0')
+                    edt_input.setText(cleanedNull)
+                    edt_input.setSelection(cursorPosition - 1)
+                }
+            }
+
+            if(input.isNotEmpty() && cursorPosition > 0 && symbol in input) {
+                val deletedChar = input[cursorPosition - 1]
+                val nextChar = if (cursorPosition < input.length - 1) input[cursorPosition] else null
+                input.delete(cursorPosition - 1, cursorPosition)
+                edt_input.setSelection(cursorPosition - 1)
+                if (deletedChar in '1'..'9' && nextChar == '0') {
+                    if (input[1] == '.') {
+                        return@setOnClickListener
+                    }
                     val cleanedNull = input.toString().trimStart('0')
                     edt_input.setText(cleanedNull)
                     edt_input.setSelection(cursorPosition - 1)
